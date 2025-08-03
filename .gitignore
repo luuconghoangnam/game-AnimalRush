@@ -1,0 +1,25 @@
+[Lớp Unity]
+[Lớp System]
+[Lớp MonoDevelop]
+Temp/
+Obj/
+Build/
+Library/
+Logs/
+MemoryCaptures/
+UserSettings/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.DS_Store
