@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Coin
+  - Obstacle
+  - Enemy
+  - LifeItem
+  - Projectile
   layers:
   - Default
   - TransparentFX
@@ -49,6 +54,12 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 2583633719
+    locked: 0
+  - name: Coin
+    uniqueID: 3180963279
+    locked: 0
+  - name: UIObstacle
+    uniqueID: 317486329
     locked: 0
   m_RenderingLayers:
   - Default

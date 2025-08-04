@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee38e59c9065e048861af3e4d497aaa, type: 3}
+  m_Name: FlyingBird
+  m_EditorClassIdentifier: 
+  obstacleName: FlyingBird
+  obstaclePrefab: {fileID: 8713307334731317586, guid: 3f1702f99e3a7be4f8ca9c0d663615d8, type: 3}
+  obstacleType: 1
+  spawnHeight: 2
+  spawnWeight: 1
+  minGameTime: 0
+  maxGameTime: 999
+  moveSpeed: 3
+  syncWithGameSpeed: 1
+  flyingAmplitude: 1
+  flyingFrequency: 2
+  enemySpeed: 2
+  canJump: 0
+  damage: 1
+  canBeDestroyed: 0
+  coinReward: 0
+  rewardPrefab: {fileID: 0}

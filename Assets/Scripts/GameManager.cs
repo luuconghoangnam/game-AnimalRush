@@ -1,38 +1,71 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    // Singleton pattern
-    public static GameManager Instance { get; private set; }
+    // Singleton pattern để dễ truy cập từ bất kỳ đâu
+    public static GameManager Instance;
 
-    // Thông số game
     [Header("Game Settings")]
-    public float initialGameSpeed = 5f;
-    public float maxGameSpeed = 15f;
-    public float speedIncreaseRate = 0.1f;
-    public float currentGameSpeed;
-    public int score = 0;
-    public int highScore = 0;
+    public int startingLives = 3;
+    public int maxLives = 3;
+    
+    [Header("Spawn Control Settings")]
+    [SerializeField] private float initialObstacleSpawnInterval = 10f; // Bắt đầu từ 10s
+    [SerializeField] private float minObstacleSpawnInterval = 5f; // Tối thiểu 5s
+    [SerializeField] private float obstacleSpawnDecreaseRate = 0.5f; // Giảm 0.5s mỗi lần
+    [SerializeField] private float obstacleSpawnDecreaseInterval = 30f; // Giảm mỗi 30s
+    
+    [SerializeField] private float minCoinSpawnInterval = 5f; // Coin spawn 5-10s
+    [SerializeField] private float maxCoinSpawnInterval = 10f;
+    
+    [Header("UI References - GamePlay")]
+    public TextMeshProUGUI coinText;
+    public TextMeshProUGUI livesText;
+    
+    [Header("UI References - Panels")]
+    public GameObject gameOverPanel;
+    public GameObject pausePanel;
+    public GameObject victoryPanel;
+    
+    [Header("UI References - Buttons")]
+    public Button restartButton;
+    public Button mainMenuButton;
+    public Button pauseButton;
+    public Button resumeButton;
+    public Button victoryRestartButton;
+    public Button victoryMainMenuButton;
+    
+    // Game State
+    private int currentCoins = 0;
+    private int totalCoins = 0; // Tổng coin để mở khóa nhân vật
+    private int currentLives;
+    private bool isGamePaused = false;
+    private bool isGameOver = false;
+    private bool isVictory = false;
+    
+    // Spawn timing
+    private float gameStartTime;
+    private float currentObstacleSpawnInterval;
+    private float nextObstacleSpawnIntervalDecrease;
+    
+    // Events để các script khác có thể lắng nghe
+    public System.Action<int> OnCoinsChanged;
+    public System.Action<int> OnLivesChanged;
+    public System.Action OnGameOver;
+    public System.Action OnVictory;
+    public System.Action OnGamePaused;
+    public System.Action OnGameResumed;
 
-    // Quản lý xu và nhân vật
-    [Header("Currency & Characters")]
-    public int coins = 0;
-    public int selectedCharacterIndex = 0;
-    public List<CharacterData> characters = new List<CharacterData>();
-
-    // Trạng thái game
-    public enum GameState { MainMenu, Playing, GameOver, Paused, Shop }
-    public GameState currentState = GameState.MainMenu;
-
-    private void Awake()
+    void Awake()
     {
-        // Singleton setup
+        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadGameData();
         }
         else
         {
@@ -42,164 +75,305 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        ResetGame();
+        InitializeGame();
+        SetupUI();
     }
 
     void Update()
     {
-        if (currentState == GameState.Playing)
+        // Pause game bằng phím ESC
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            // Tăng tốc độ dần theo thời gian
-            if (currentGameSpeed < maxGameSpeed)
-            {
-                currentGameSpeed += speedIncreaseRate * Time.deltaTime;
-            }
-
-            // Tăng điểm theo thời gian
-            score += Mathf.RoundToInt(Time.deltaTime * currentGameSpeed);
+            if (isGamePaused)
+                ResumeGame();
+            else
+                PauseGame();
+        }
+        
+        // Update spawn timing
+        if (CanPlay())
+        {
+            UpdateSpawnTiming();
         }
     }
 
-    public void StartGame()
+    void InitializeGame()
     {
-        currentState = GameState.Playing;
-        ResetGame();
+        currentLives = startingLives;
+        currentCoins = 0;
+        isGameOver = false;
+        isGamePaused = false;
+        isVictory = false;
+        
+        // Initialize spawn timing
+        gameStartTime = Time.time;
+        currentObstacleSpawnInterval = initialObstacleSpawnInterval;
+        nextObstacleSpawnIntervalDecrease = gameStartTime + obstacleSpawnDecreaseInterval;
+        
+        // Load tổng coin từ PlayerPrefs
+        totalCoins = PlayerPrefs.GetInt("TotalCoins", 0);
+        
+        UpdateUI();
+        
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+        if (victoryPanel != null)
+            victoryPanel.SetActive(false);
+    }
+    
+    void UpdateSpawnTiming()
+    {
+        // Giảm obstacle spawn interval theo thời gian
+        if (Time.time >= nextObstacleSpawnIntervalDecrease)
+        {
+            if (currentObstacleSpawnInterval > minObstacleSpawnInterval)
+            {
+                currentObstacleSpawnInterval = Mathf.Max(
+                    currentObstacleSpawnInterval - obstacleSpawnDecreaseRate, 
+                    minObstacleSpawnInterval
+                );
+                
+                nextObstacleSpawnIntervalDecrease = Time.time + obstacleSpawnDecreaseInterval;
+                
+                Debug.Log($"[GAMEMANAGER] Obstacle spawn interval decreased to {currentObstacleSpawnInterval}s");
+            }
+        }
+    }
+
+    void SetupUI()
+    {
+        if (restartButton != null)
+            restartButton.onClick.AddListener(RestartGame);
+        if (mainMenuButton != null)
+            mainMenuButton.onClick.AddListener(GoToMainMenu);
+        if (pauseButton != null)
+            pauseButton.onClick.AddListener(PauseGame);
+        if (resumeButton != null)
+            resumeButton.onClick.AddListener(ResumeGame);
+        if (victoryRestartButton != null)
+            victoryRestartButton.onClick.AddListener(RestartGame);
+        if (victoryMainMenuButton != null)
+            victoryMainMenuButton.onClick.AddListener(GoToMainMenu);
+    }
+
+    #region Spawn Timing Getters
+    public float GetCurrentObstacleSpawnInterval()
+    {
+        return currentObstacleSpawnInterval;
+    }
+    
+    public float GetRandomCoinSpawnInterval()
+    {
+        return Random.Range(minCoinSpawnInterval, maxCoinSpawnInterval);
+    }
+    
+    public float GetGameTime()
+    {
+        return Time.time - gameStartTime;
+    }
+    #endregion
+
+    #region Coin Management
+    public void AddCoin(int amount = 1)
+    {
+        if (isGameOver || isVictory) return;
+        
+        currentCoins += amount;
+        totalCoins += amount;
+        
+        OnCoinsChanged?.Invoke(currentCoins);
+        UpdateCoinUI();
+        
+        // Lưu tổng coin
+        SaveTotalCoins();
+    }
+
+    public int GetCurrentCoins()
+    {
+        return currentCoins;
+    }
+
+    public int GetTotalCoins()
+    {
+        return totalCoins;
+    }
+
+    public int GetHighCoins()
+    {
+        return PlayerPrefs.GetInt("HighCoins", 0);
+    }
+    #endregion
+
+    #region Lives Management
+    public void LoseLife()
+    {
+        if (isGameOver) return;
+        
+        currentLives--;
+        OnLivesChanged?.Invoke(currentLives);
+        UpdateLivesUI();
+        
+        if (currentLives <= 0)
+        {
+            GameOver();
+        }
+    }
+
+    public void AddLife()
+    {
+        if (currentLives < maxLives)
+        {
+            currentLives++;
+            OnLivesChanged?.Invoke(currentLives);
+            UpdateLivesUI();
+        }
+    }
+
+    public int GetLives()
+    {
+        return currentLives;
+    }
+    #endregion
+
+    #region Game State Management
+    public void PauseGame()
+    {
+        if (isGameOver) return;
+        
+        isGamePaused = true;
+        Time.timeScale = 0f;
+        
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
+            
+        OnGamePaused?.Invoke();
+    }
+
+    public void ResumeGame()
+    {
+        isGamePaused = false;
+        Time.timeScale = 1f;
+        
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+            
+        OnGameResumed?.Invoke();
+    }
+
+    public void Victory()
+    {
+        if (isGameOver || isVictory) return;
+        
+        isVictory = true;
+        Time.timeScale = 0f;
+        
+        if (victoryPanel != null)
+            victoryPanel.SetActive(true);
+            
+        OnVictory?.Invoke();
+        
+        // Lưu high coins nếu cần
+        SaveHighCoins();
     }
 
     public void GameOver()
     {
-        currentState = GameState.GameOver;
+        if (isGameOver || isVictory) return;
         
-        // Cập nhật high score
-        if (score > highScore)
-        {
-            highScore = score;
-            SaveGameData();
-        }
-    }
-
-    public void PauseGame()
-    {
-        if (currentState == GameState.Playing)
-        {
-            currentState = GameState.Paused;
-            Time.timeScale = 0;
-        }
-        else if (currentState == GameState.Paused)
-        {
-            currentState = GameState.Playing;
-            Time.timeScale = 1;
-        }
-    }
-
-    public void ResetGame()
-    {
-        currentGameSpeed = initialGameSpeed;
-        score = 0;
-        Time.timeScale = 1;
-    }
-
-    public void AddCoins(int amount)
-    {
-        coins += amount;
-        SaveGameData();
-    }
-
-    public bool PurchaseCharacter(int characterIndex, int price)
-    {
-        if (coins >= price)
-        {
-            coins -= price;
-            characters[characterIndex].isUnlocked = true;
-            SaveGameData();
-            return true;
-        }
-        return false;
-    }
-
-    public void SelectCharacter(int index)
-    {
-        if (characters[index].isUnlocked)
-        {
-            selectedCharacterIndex = index;
-            SaveGameData();
-        }
-    }
-
-    public void SaveGameData()
-    {
-        PlayerPrefs.SetInt("Coins", coins);
-        PlayerPrefs.SetInt("HighScore", highScore);
-        PlayerPrefs.SetInt("SelectedCharacter", selectedCharacterIndex);
+        isGameOver = true;
+        Time.timeScale = 0f;
         
-        // Lưu trạng thái mở khóa nhân vật
-        for (int i = 0; i < characters.Count; i++)
-        {
-            PlayerPrefs.SetInt("Character_" + i + "_Unlocked", characters[i].isUnlocked ? 1 : 0);
-        }
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(true);
+            
+        OnGameOver?.Invoke();
         
+        // Lưu high coins nếu cần
+        SaveHighCoins();
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1f;
+        // Thay "MainMenu" bằng tên scene menu chính của bạn
+        SceneManager.LoadScene("MainMenu");
+    }
+    #endregion
+
+    #region UI Updates
+    void UpdateUI()
+    {
+        UpdateCoinUI();
+        UpdateLivesUI();
+    }
+
+    void UpdateCoinUI()
+    {
+        if (coinText != null)
+            coinText.text = currentCoins.ToString();
+    }
+
+    void UpdateLivesUI()
+    {
+        if (livesText != null)
+            livesText.text = currentLives.ToString();
+    }
+    #endregion
+
+    #region Save/Load System
+    void SaveHighCoins()
+    {
+        int highCoins = PlayerPrefs.GetInt("HighCoins", 0);
+        if (currentCoins > highCoins)
+        {
+            PlayerPrefs.SetInt("HighCoins", currentCoins);
+            PlayerPrefs.Save();
+        }
+    }
+
+    void SaveTotalCoins()
+    {
+        PlayerPrefs.SetInt("TotalCoins", totalCoins);
         PlayerPrefs.Save();
     }
 
-    public void LoadGameData()
+    public void SpendTotalCoins(int amount)
     {
-        coins = PlayerPrefs.GetInt("Coins", 0);
-        highScore = PlayerPrefs.GetInt("HighScore", 0);
-        selectedCharacterIndex = PlayerPrefs.GetInt("SelectedCharacter", 0);
-        
-        InitializeCharacters();
-        
-        // Load trạng thái mở khóa nhân vật
-        for (int i = 0; i < characters.Count; i++)
+        if (totalCoins >= amount)
         {
-            characters[i].isUnlocked = PlayerPrefs.GetInt("Character_" + i + "_Unlocked", i == 0 ? 1 : 0) == 1;
+            totalCoins -= amount;
+            SaveTotalCoins();
         }
     }
+    #endregion
 
-    private void InitializeCharacters()
+    #region Getters cho các script khác
+    public bool IsGamePaused()
     {
-        // Khởi tạo danh sách nhân vật (sẽ bổ sung thêm sau)
-        if (characters.Count == 0)
-        {
-            // Nhân vật mặc định (đã mở khóa)
-            characters.Add(new CharacterData { 
-                characterName = "Ninja Đỏ", 
-                price = 0, 
-                isUnlocked = true,
-                specialAbility = "Không có kỹ năng đặc biệt"
-            });
-            
-            // Thêm các nhân vật khác (chưa mở khóa)
-            characters.Add(new CharacterData { 
-                characterName = "Ninja Xanh", 
-                price = 1000, 
-                isUnlocked = false,
-                specialAbility = "Nhảy cao hơn"
-            });
-            
-            characters.Add(new CharacterData { 
-                characterName = "Ninja Đen", 
-                price = 2500, 
-                isUnlocked = false,
-                specialAbility = "Miễn nhiễm 1 lần va chạm"
-            });
-            
-            characters.Add(new CharacterData { 
-                characterName = "Ninja Vàng", 
-                price = 5000, 
-                isUnlocked = false,
-                specialAbility = "Thu thập xu gấp đôi"
-            });
-        }
+        return isGamePaused;
     }
-}
 
-[System.Serializable]
-public class CharacterData
-{
-    public string characterName;
-    public int price;
-    public bool isUnlocked;
-    public string specialAbility;
-    // Có thể bổ sung thêm các thuộc tính khác
-}
+    public bool IsGameOver()
+    {
+        return isGameOver;
+    }
+
+    public bool IsVictory()
+    {
+        return isVictory;
+    }
+
+    public bool CanPlay()
+    {
+        return !isGamePaused && !isGameOver && !isVictory;
+    }
+    #endregion
+} 
