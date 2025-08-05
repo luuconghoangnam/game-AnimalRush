@@ -9,6 +9,8 @@ TagManager:
   - Enemy
   - LifeItem
   - Projectile
+  - SafeBox
+  - Platform
   layers:
   - Default
   - TransparentFX

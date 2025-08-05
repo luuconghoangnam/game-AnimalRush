@@ -18,7 +18,7 @@ MonoBehaviour:
   runAnimation: {fileID: 0}
   jumpAnimation: {fileID: 0}
   dieAnimation: {fileID: 0}
-  moveSpeed: 10
+  moveSpeed: 13
   jumpForce: 10
   unlockCost: 0
   hasDoubleJump: 0

@@ -939,6 +939,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingLives: 3
   maxLives: 3
+  initialObstacleSpawnInterval: 10
+  minObstacleSpawnInterval: 5
+  obstacleSpawnDecreaseRate: 0.5
+  obstacleSpawnDecreaseInterval: 30
+  minCoinSpawnInterval: 5
+  maxCoinSpawnInterval: 10
   coinText: {fileID: 1098564269}
   livesText: {fileID: 1789544859}
   gameOverPanel: {fileID: 0}
@@ -1666,6 +1672,8 @@ GameObject:
   - component: {fileID: 1236551271}
   - component: {fileID: 1236551270}
   - component: {fileID: 1236551269}
+  - component: {fileID: 1236551274}
+  - component: {fileID: 1236551273}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -1711,7 +1719,7 @@ MonoBehaviour:
     ScreenPosition: {x: -0.15, y: 0.2}
     DeadZone:
       Enabled: 1
-      Size: {x: 0.2, y: 0.2}
+      Size: {x: 0.2, y: 0.4}
     HardLimits:
       Enabled: 0
       Size: {x: 0.8, y: 0.8}
@@ -1776,12 +1784,89 @@ Transform:
   m_GameObject: {fileID: 1236551268}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.126666, y: -6.9, z: -10}
+  m_LocalPosition: {x: -13.126666, y: -6.9000006, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1236551273
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236551268}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: -9222638678284868780, guid: 18d154baadb805e4e8ee5d72755bed10, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1.0625, y: 1.25}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!95 &1236551274
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236551268}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0cc86a78c53c32b4cbc5e7f4e711a388, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1349477166
 GameObject:
   m_ObjectHideFlags: 0
@@ -2216,10 +2301,14 @@ MonoBehaviour:
   jumpKey: 32
   leftKey: 97
   rightKey: 100
-  jumpHeight: 45
+  jumpHeight: 50
   enableGroundFlow: 1
   baseGroundFlowSpeed: 2
   syncWithParallax: 1
+  enableDynamicSpeed: 1
+  speedMultiplierRate: 1
+  maxSpeedMultiplier: 3
+  showSpeedDebug: 0
 --- !u!4 &1527118278
 Transform:
   m_ObjectHideFlags: 0
@@ -2230,7 +2319,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -20.06, y: -12.1, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 983839821}
@@ -2449,18 +2538,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   availableObstacles:
   - {fileID: 11400000, guid: 738ea58dd0640ce4082569eb6afc2b99, type: 2}
+  - {fileID: 11400000, guid: 399b81e5523e0bf44ae8fd93c1be58f9, type: 2}
+  - {fileID: 11400000, guid: b2e6e322fb86b404793bd515ef1d424c, type: 2}
   spawnPoint: {fileID: 1412749347}
   spawnDistance: 15
-  baseSpawnInterval: 10
-  minSpawnInterval: 3
-  spawnIntervalDecrease: 0.1
-  intervalDecreaseRate: 10
-  groundHeight: -12
-  lowHeight: 2
-  mediumHeight: 4
+  minSpawnInterval: 5
+  maxSpawnInterval: 10
+  enableTimeDecrease: 1
+  decreaseRate: 0.1
+  decreaseInterval: 30
+  groundHeight: -12.04
+  lowHeight: -4.5
+  mediumHeight: -4.56
   highHeight: 6
-  enableDifficultyScaling: 1
-  difficultyIncreaseRate: 30
+  showDebugInfo: 0
 --- !u!4 &1916189110
 Transform:
   m_ObjectHideFlags: 0
@@ -2622,6 +2713,62 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2095021457
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2095021459}
+  - component: {fileID: 2095021458}
+  m_Layer: 0
+  m_Name: CoinSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2095021458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095021457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73d480c78a8087b46b222b5b6f0bc5f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinPrefab: {fileID: 6621943954855387130, guid: 1d826bc9e9d0a164a8a38ce70490323b, type: 3}
+  spawnPoint: {fileID: 2095021459}
+  spawnDistance: 15
+  spawnHeights:
+  - -11
+  - -5
+  randomHeightChance: 0.3
+  coinValues: 0000000000000000
+  coinValueWeights:
+  - 0.7
+  - 0.25
+  showDebugInfo: 0
+--- !u!4 &2095021459
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095021457}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 30.99, y: -10.99, z: 10.273181}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2130048333
 GameObject:
   m_ObjectHideFlags: 0
@@ -2675,3 +2822,4 @@ SceneRoots:
   - {fileID: 848506122}
   - {fileID: 73464056}
   - {fileID: 1916189110}
+  - {fileID: 2095021459}
