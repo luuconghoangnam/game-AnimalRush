@@ -1,6 +1,10 @@
 # 🏃‍♂️ Animal Rush
 
+![Game Logo](screenshots/logo.png)
+
 **Animal Rush** là một game endless runner 2D thú vị được phát triển bằng Unity, nơi bạn điều khiển các con vật đáng yêu chạy qua những thử thách đầy nguy hiểm!
+
+![Game Banner](screenshots/banner.png)
 
 ![Game Banner](https://img.shields.io/badge/Unity-2022.3+-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-PC%20%7C%20Mobile-brightgreen.svg)
@@ -47,41 +51,33 @@ Mỗi con vật trong Animal Rush có những khả năng đặc biệt riêng:
 
 ## 🎮 Screenshots & Media
 
-> **Gợi ý ảnh bạn nên thêm:**
+### 📸 Game Screenshots
 
-### 1. **Logo/Banner Game** 
-- Ảnh logo chính của game
-- Banner với tên "Animal Rush" và artwork
-
-### 2. **Main Menu**
-- Screenshot màn hình menu chính
-- Hiển thị UI design và các nút chức năng
-
-### 3. **Character Selection**
-- Ảnh màn hình chọn nhân vật
-- Showcase các con vật khác nhau
-- UI hiển thị stats và abilities
-
-### 4. **Gameplay Screenshots**
-- Ảnh trong game với player đang chạy
-- Hiển thị obstacles, coins, enemies
-- UI gameplay (coins, lives, score)
-
-### 5. **Game Over Screen**
-- Màn hình kết thúc với điểm số
-- Leaderboard display
-
-### 6. **GIF Animated**
-- GIF ngắn showing gameplay
-- Character abilities demonstration
-- Obstacle interactions
-
-*Example structure:*
-```
 ![Main Menu](screenshots/main-menu.png)
-![Character Selection](screenshots/character-select.png)
-![Gameplay](screenshots/gameplay.gif)
-```
+*Giao diện menu chính với design đẹp mắt*
+
+![Character Selection](screenshots/character-selection.png)
+*Màn hình chọn nhân vật với stats và abilities*
+
+![Gameplay](screenshots/gameplay-1.png)
+*Gameplay chính - player chạy và thu thập coin*
+
+![Obstacles](screenshots/gameplay-2.png)
+*Đa dạng obstacles và enemies*
+
+![Game Over](screenshots/game-over.png)
+*Màn hình kết thúc với leaderboard*
+
+### 🎬 Animated Demos
+
+![Gameplay Demo](screenshots/gameplay-demo.gif)
+*Demo gameplay cơ bản*
+
+![Character Abilities](screenshots/abilities-demo.gif)
+*Showcase các abilities đặc biệt*
+
+![Obstacles Demo](screenshots/obstacles-demo.gif)
+*Tương tác với obstacles*
 
 ## 🛠️ Phát Triển
 
@@ -113,12 +109,12 @@ Assets/
 
 ## 🚀 Cài Đặt & Chạy Game
 
-### Yêu Cầu Hệ Thống
+### 📋 Yêu Cầu Hệ Thống
 - Unity 2022.3 hoặc mới hơn
 - Visual Studio hoặc IDE tương tự
 - Git (để clone repository)
 
-### Hướng Dẫn Build
+### 🔧 Hướng Dẫn Build
 1. Clone repository:
    ```bash
    git clone https://github.com/luuconghoangnam/game-AnimalRush.git
@@ -131,6 +127,22 @@ Assets/
 4. Build cho platform mong muốn:
    - **PC**: File → Build Settings → PC, Mac & Linux Standalone
    - **Mobile**: File → Build Settings → Android/iOS
+
+### 📁 Cấu Trúc Screenshots
+Để bổ sung ảnh vào README, tạo thư mục `screenshots/` trong root project với cấu trúc:
+```
+screenshots/
+├── logo.png              # Logo game (512x512px khuyến nghị)
+├── banner.png             # Banner game (1200x300px khuyến nghị)
+├── main-menu.png          # Screenshot main menu
+├── character-selection.png # Screenshot character selection
+├── gameplay-1.png         # Screenshot gameplay chính
+├── gameplay-2.png         # Screenshot với obstacles
+├── game-over.png          # Screenshot game over screen
+├── gameplay-demo.gif      # GIF demo gameplay (max 3MB)
+├── abilities-demo.gif     # GIF demo abilities (max 2MB)
+└── obstacles-demo.gif     # GIF demo obstacles (max 2MB)
+```
 
 ## 🎨 Art Style & Design
 
